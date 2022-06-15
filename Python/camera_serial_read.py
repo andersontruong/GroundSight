@@ -32,9 +32,10 @@ with tqdm.tqdm(total=IMAGE_SIZE_Y*IMAGE_SIZE_X) as pbar:
             img_array[y, x] = value
             pbar.update(1)
 
-# Roll image upwards to remove artifact
+# Roll image array upwards to remove artifact
 img_array = np.roll(img_array, -1, axis=0)
 
+# Convert and save array as image
 img = Image.fromarray(img_array)
 img.save(FILE_DIR)
 

@@ -50,6 +50,17 @@
 #include "mxc_delay.h"
 #include "camera.h"
 
+/***** Camera/Image *****/
+
+#define IMAGE_SIZE_X  (64*2)
+#define IMAGE_SIZE_Y  (64*2)
+
+#define CAMERA_FREQ   (5 * 1000 * 1000)
+
+volatile uint32_t cnn_time; // Stopwatch
+
+static uint32_t input_0[IMAGE_SIZE_X * IMAGE_SIZE_Y]; // buffer for camera image
+
 /***** I2C LED *****/
 #include "nvic_table.h"
 #include "i2c_regs.h"
@@ -79,7 +90,25 @@ enum COLOR {
 	_WHITE
 };
 
-void SetLEDs(int state) {
+void D1_LED(int state)
+{
+	if (state == _RED || state == _MAGENTA || state == _YELLOW || state == _WHITE)
+		LED_On(LED1);
+	else
+		LED_Off(LED1);
+
+	if (state == _GREEN || state == _CYAN || state == _YELLOW || state == _WHITE)
+			LED_On(LED2);
+		else
+			LED_Off(LED2);
+
+	if (state == _BLUE || state == _MAGENTA || state == _CYAN || state == _WHITE)
+			LED_On(LED3);
+		else
+			LED_Off(LED3);
+}
+
+void D2_LED(int state) {
 	int error;
     // Set the LED Color
     mxc_i2c_req_t reqMaster;
@@ -102,28 +131,6 @@ void SetLEDs(int state) {
     }
 }
 
-// #define CLASSIFY
-
-// Comment out USE_SAMPLEDATA to use Camera module
-//#define USE_SAMPLEDATA
-
-//#define ASCII_ART
-
-#define IMAGE_SIZE_X  (64*2)
-#define IMAGE_SIZE_Y  (64*2)
-
-#define CAMERA_FREQ   (5 * 1000 * 1000)
-
-const char classes[CNN_NUM_OUTPUTS][10] = { "Cat", "Dog" };
-
-// Classification layer:
-static int32_t ml_data[CNN_NUM_OUTPUTS];
-static q15_t ml_softmax[CNN_NUM_OUTPUTS];
-
-volatile uint32_t cnn_time; // Stopwatch
-
-static uint32_t input_0[IMAGE_SIZE_X * IMAGE_SIZE_Y]; // buffer for camera image
-
 /* **************************************************************************** */
 
 void serial_send_image(uint32_t *img)
@@ -144,50 +151,6 @@ void serial_send_image(uint32_t *img)
 }
 
 /* **************************************************************************** */
-#ifdef ASCII_ART
-
-//char * brightness = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "; // standard
-char *brightness = "@%#*+=-:. "; // simple
-#define RATIO 2  // ratio of scaling down the image to display in ascii
-void asciiart(uint8_t *img) {
-	int skip_x, skip_y;
-	uint8_t r, g, b, Y;
-	uint8_t *srcPtr = img;
-	int l = strlen(brightness) - 1;
-
-	skip_x = RATIO;
-	skip_y = RATIO;
-	for (int i = 0; i < IMAGE_SIZE_Y; i++) {
-		for (int j = 0; j < IMAGE_SIZE_X; j++) {
-
-			// 0x00bbggrr, convert to [0,255] range
-			r = *srcPtr++ ^ 0x80;
-			g = *(srcPtr++) ^ 0x80;
-			b = *(srcPtr++) ^ 0x80;
-
-			srcPtr++; //skip msb=0x00
-
-			// Y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-			Y = (3 * r + b + 4 * g) >> 3; // simple luminance conversion
-			if ((skip_x == RATIO) && (skip_y == RATIO))
-				printf("%c", brightness[l - (Y * l / 255)]);
-
-			skip_x++;
-			if (skip_x > RATIO)
-				skip_x = 1;
-		}
-		skip_y++;
-		if (skip_y > RATIO) {
-			printf("\n");
-			skip_y = 1;
-		}
-	}
-
-}
-
-#endif
-
-/* **************************************************************************** */
 void fail(void) {
 	printf("\n*** FAIL ***\n\n");
 
@@ -195,21 +158,7 @@ void fail(void) {
 }
 
 /* **************************************************************************** */
-void cnn_load_input(void) {
-	int i;
-	const uint32_t *in0 = input_0;
 
-	for (i = 0; i < 16384; i++) {
-		// Remove the following line if there is no risk that the source would overrun the FIFO:
-		while (((*((volatile uint32_t*) 0x50000004) & 1)) != 0)
-			; // Wait for FIFO 0
-		*((volatile uint32_t*) 0x50000008) = *in0++; // Write FIFO 0
-	}
-}
-
-/* **************************************************************************** */
-
-#if !defined USE_SAMPLEDATA
 void capture_process_camera(void) {
 
 	uint8_t *raw;
@@ -219,8 +168,6 @@ void capture_process_camera(void) {
 	int cnt = 0;
 
 	uint8_t r, g, b;
-	uint16_t rgb;
-	int j = 0;
 
 	uint8_t *data = NULL;
 	stream_stat_t *stat;
@@ -269,28 +216,17 @@ void capture_process_camera(void) {
 	}
 
 }
-#endif
 
 /* **************************************************************************** */
 int main(void) {
-	int i;
-	int digs, tens;
 	int ret = 0;
-	int result[CNN_NUM_OUTPUTS]; // = {0};
 	int dma_channel;
 
-#ifdef BOARD_FTHR_REVA
     // Wait for PMIC 1.8V to become available, about 180ms after power up.
     MXC_Delay(200000);
     /* Enable camera power */
     Camera_Power(POWER_ON);
     //MXC_Delay(300000);
-
-#ifdef CLASSIFY
-    printf("\n\nCats-vs-Dogs Feather Demo\n");
-#endif
-
-#endif
 
 	/* Enable cache */
 	MXC_ICC_Enable(MXC_ICC0);
@@ -299,31 +235,11 @@ int main(void) {
 	MXC_SYS_Clock_Select(MXC_SYS_CLOCK_IPO);
 	SystemCoreClockUpdate();
 
-#ifdef CLASSIFY
-	/* Enable peripheral, enable CNN interrupt, turn on CNN clock */
-	/* CNN clock: 50 MHz div 1 */
-	cnn_enable(MXC_S_GCR_PCLKDIV_CNNCLKSEL_PCLK,
-			MXC_S_GCR_PCLKDIV_CNNCLKDIV_DIV1);
-
-	/* Configure P2.5, turn on the CNN Boost */
-	cnn_boost_enable(MXC_GPIO2, MXC_GPIO_PIN_5);
-
-	/* Bring CNN state machine into consistent state */
-	cnn_init();
-	/* Load CNN kernels */
-	cnn_load_weights();
-	/* Load CNN bias */
-	cnn_load_bias();
-	/* Configure CNN state machine */
-	cnn_configure();
-#endif
-
 	// Initialize DMA for camera interface
 	MXC_DMA_Init();
 	dma_channel = MXC_DMA_AcquireChannel();
 
 	// Initialize camera.
-	// printf("Init Camera.\n");
 	camera_init(CAMERA_FREQ);
 
 	ret = camera_setup(IMAGE_SIZE_X, IMAGE_SIZE_Y, PIXFORMAT_RGB888,
@@ -336,15 +252,13 @@ int main(void) {
 	camera_write_reg(0x11, 0x3); // set camera clock prescaller to prevent streaming overflow
 
 	// White LEDs as camera light
-	/*
-	LED_On(LED1);
-	LED_On(LED2);
-	LED_On(LED3);*/
 
-	SetLEDs(_WHITE);
+	D1_LED(_WHITE);
+
+	D2_LED(_BLACK);
 	capture_process_camera();
 
-	// printf("********** Press PB1(SW1) to capture an image **********\r\n");
+	// Wait for SW1 button press
 	while (!PB_Get(0));
 
 	// Enable CNN clock
@@ -356,56 +270,6 @@ int main(void) {
 
 		serial_send_image(input_0);
 
-#ifdef CLASSIFY
-		cnn_start();
-		cnn_load_input();
-
-		SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk; // SLEEPDEEP=0
-		while (cnn_time == 0) {
-			__WFI();    // Wait for CNN interrupt
-		}
-
-		// Unload CNN data
-		cnn_unload((uint32_t*) ml_data);
-		cnn_stop();
-
-		// Softmax
-		softmax_q17p14_q15((const q31_t*) ml_data, CNN_NUM_OUTPUTS, ml_softmax);
-
-		printf("Time for CNN: %d us\n\n", cnn_time);
-
-		printf("Classification results:\n");
-
-		for (i = 0; i < CNN_NUM_OUTPUTS; i++) {
-			digs = (1000 * ml_softmax[i] + 0x4000) >> 15;
-			tens = digs % 10;
-			digs = digs / 10;
-			result[i] = digs;
-			printf("[%7d] -> Class %d %8s: %d.%d%%\r\n", ml_data[i], i,
-					classes[i], result[i], tens);
-		}
-
-		printf("\n");
-
-		if (result[0] == result[1]) {
-			LED_On(LED1);
-			LED_On(LED2);
-
-		} else if (ml_data[0] > ml_data[1]) {
-			LED_On(LED1);
-			LED_Off(LED2);
-		} else {
-			LED_Off(LED1);
-			LED_On(LED2);
-		}
-
-
-#endif
-
-#ifdef ASCII_ART
-		asciiart((uint8_t*) input_0);
-		printf("********** Press PB1(SW1) to capture an image **********\r\n");
-#endif
 		while (!PB_Get(0));
 
 	}
