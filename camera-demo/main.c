@@ -52,8 +52,7 @@
 
 /***** Camera/Image *****/
 
-#define IMAGE_SIZE_X
-
+#define IMAGE_SIZE_X (64*2)
 
 #define IMAGE_SIZE_Y  (64*2)
 
@@ -135,7 +134,7 @@ void D2_LED(int state) {
 
 /* **************************************************************************** */
 
-void serial_send_image(uint32_t *img)
+void serial_image(uint32_t *img)
 {
 	uint8_t *p = (uint8_t*) img;
 	uint8_t r, g, b;
@@ -153,6 +152,7 @@ void serial_send_image(uint32_t *img)
 }
 
 /* **************************************************************************** */
+
 void fail(void) {
 	printf("\n*** FAIL ***\n\n");
 
@@ -233,7 +233,6 @@ int main(void) {
     MXC_Delay(200000);
     /* Enable camera power */
     Camera_Power(POWER_ON);
-    //MXC_Delay(300000);
 
 	/* Enable cache */
 	MXC_ICC_Enable(MXC_ICC0);
@@ -249,8 +248,14 @@ int main(void) {
 	// Initialize camera.
 	camera_init(CAMERA_FREQ);
 
-	ret = camera_setup(IMAGE_SIZE_X, IMAGE_SIZE_Y, PIXFORMAT_RGB888,
-			FIFO_THREE_BYTE, STREAMING_DMA, dma_channel);
+	ret = camera_setup(
+			IMAGE_SIZE_X,
+			IMAGE_SIZE_Y,
+			PIXFORMAT_RGB888,
+			FIFO_THREE_BYTE,
+			STREAMING_DMA,
+			dma_channel
+			);
 	if (ret != STATUS_OK) {
 		printf("Error returned from setting up camera. Error %d\n", ret);
 		return -1;
@@ -258,34 +263,26 @@ int main(void) {
 
 	camera_write_reg(0x11, 0x3); // set camera clock prescaller to prevent streaming overflow
 
-	// White LEDs as camera light
+	camera_set_brightness(-2);
+	camera_set_contrast(0);
 
 	D1_LED(_BLACK);
 	D2_LED(_BLACK);
 
-	camera_set_brightness(-2);
-	camera_set_contrast(0);
-
-	capture_process_camera(); // Remove white line artifact
-
 	// Wait for SW1 button press
 	while (!PB_Get(0));
 
-	// Enable CNN clock
-	// MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CNN);
 	int contrast = 2;
-	int secs[] = {1, 3, 5, 7, 10};
-	int time = 3;
 
 	while (1) {
 
 		camera_set_contrast(contrast);
-		//D1_LED(_WHITE);
-		MXC_Delay(MXC_DELAY_SEC(5));
+		D1_LED(_WHITE);
+		MXC_Delay(MXC_DELAY_SEC(3));
 		capture_process_camera();
 		D1_LED(_BLACK);
 
-		serial_send_image(input_0);
+		serial_image(input_0);
 
 		while (!PB_Get(0));
 
