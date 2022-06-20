@@ -15,7 +15,7 @@ IMAGE_SIZE_X = 64*2
 IMAGE_SIZE_Y = 64*2
 CHANNELS = 3
 
-FILE_DIR = './captures/test-capture.png'
+FILE_DIR = 'captures/test-capture.png'
 SERIAL_PORT = 'COM7'
 
 ser = serial.Serial('COM7', 115200, timeout=1)
@@ -31,9 +31,6 @@ with tqdm.tqdm(total=IMAGE_SIZE_Y*IMAGE_SIZE_X) as pbar:
             value = value.decode('utf-8').rstrip('\r\n').split(',')
             img_array[y, x] = value
             pbar.update(1)
-
-# Roll image array upwards to remove artifact
-img_array = np.roll(img_array, -1, axis=0)
 
 # Convert and save array as image
 img = Image.fromarray(img_array)

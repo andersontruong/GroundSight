@@ -52,7 +52,9 @@
 
 /***** Camera/Image *****/
 
-#define IMAGE_SIZE_X  (64*2)
+#define IMAGE_SIZE_X
+
+
 #define IMAGE_SIZE_Y  (64*2)
 
 #define CAMERA_FREQ   (5 * 1000 * 1000)
@@ -178,12 +180,17 @@ void capture_process_camera(void) {
 	camera_get_image(&raw, &imgLen, &w, &h);
 
 	// Get image line by line
-	for (int row = 0; row < h; row++) {
+	for (int row = 0; row < h + 1; row++) {
 		// Wait until camera streaming buffer is full
 		while ((data = get_camera_stream_buffer()) == NULL) {
 			if (camera_is_image_rcv()) {
 				break;
 			}
+		}
+		if (row == 0)
+		{
+			release_camera_stream_buffer();
+			continue;
 		}
 
 		int j = 0;
@@ -211,8 +218,8 @@ void capture_process_camera(void) {
 	if (stat->overflow_count > 0) {
 		printf("OVERFLOW DISP = %d\n", stat->overflow_count);
 		LED_On(LED2); // Turn on red LED if overflow detected
-		while (1)
-			;
+
+		while (1);
 	}
 
 }
@@ -253,20 +260,30 @@ int main(void) {
 
 	// White LEDs as camera light
 
-	D1_LED(_WHITE);
-
+	D1_LED(_BLACK);
 	D2_LED(_BLACK);
-	capture_process_camera();
+
+	camera_set_brightness(-2);
+	camera_set_contrast(0);
+
+	capture_process_camera(); // Remove white line artifact
 
 	// Wait for SW1 button press
 	while (!PB_Get(0));
 
 	// Enable CNN clock
-	MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CNN);
+	// MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CNN);
+	int contrast = 2;
+	int secs[] = {1, 3, 5, 7, 10};
+	int time = 3;
 
 	while (1) {
 
+		camera_set_contrast(contrast);
+		//D1_LED(_WHITE);
+		MXC_Delay(MXC_DELAY_SEC(5));
 		capture_process_camera();
+		D1_LED(_BLACK);
 
 		serial_send_image(input_0);
 
