@@ -1,10 +1,10 @@
 # GroundSight
 
 ## Capture and save images from MAX78000FTHR's onboard camera
-1. Compile and upload the .c project in '/camera-demo/' to the MAX78000FTHR.
-2. Install the required Python packages in '/Python/requirements.txt'.
+1. Compile and upload the .c project in 'camera-demo/' to the MAX78000FTHR.
+2. Install the required Python packages in 'Python/requirements.txt'.
 3. Connect the board to a USB port.
-4. Run '/Python/camera_serial_read.py' with the command-line arguments below
+4. Run 'Python/camera_serial_read.py' with the command-line arguments below
 5. Press the SW1/PB1 button on the MAX78000FTHR to capture an image.
 
 ### Command-Line Arguments
