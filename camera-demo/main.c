@@ -44,9 +44,6 @@
 #include "tmr.h"
 #include "dma.h"
 #include "pb.h"
-#include "cnn.h"
-#include "weights.h"
-#include "sampledata.h"
 #include "mxc_delay.h"
 #include "camera.h"
 
@@ -81,67 +78,60 @@ static uint32_t input_0[IMAGE_SIZE_X * IMAGE_SIZE_Y]; // buffer for camera image
 static uint8_t tx_buf[LED_SET_LEN];
 
 enum COLOR {
-	_BLACK,
-	_BLUE,
-	_RED,
-	_MAGENTA,
-	_GREEN,
-	_CYAN,
-	_YELLOW,
-	_WHITE
+	_BLACK, _BLUE, _RED, _MAGENTA, _GREEN, _CYAN, _YELLOW, _WHITE
 };
 
-void D1_LED(int state)
-{
-	if (state == _RED || state == _MAGENTA || state == _YELLOW || state == _WHITE)
+void D1_LED(int state) {
+	if (state == _RED || state == _MAGENTA || state == _YELLOW
+			|| state == _WHITE)
 		LED_On(LED1);
 	else
 		LED_Off(LED1);
 
-	if (state == _GREEN || state == _CYAN || state == _YELLOW || state == _WHITE)
-			LED_On(LED2);
-		else
-			LED_Off(LED2);
+	if (state == _GREEN || state == _CYAN || state == _YELLOW
+			|| state == _WHITE)
+		LED_On(LED2);
+	else
+		LED_Off(LED2);
 
-	if (state == _BLUE || state == _MAGENTA || state == _CYAN || state == _WHITE)
-			LED_On(LED3);
-		else
-			LED_Off(LED3);
+	if (state == _BLUE || state == _MAGENTA || state == _CYAN
+			|| state == _WHITE)
+		LED_On(LED3);
+	else
+		LED_Off(LED3);
 }
 
 void D2_LED(int state) {
 	int error;
-    // Set the LED Color
-    mxc_i2c_req_t reqMaster;
-    reqMaster.i2c = PMIC_I2C;
-    reqMaster.addr = PMIC_SLAVE_ADDR;
-    reqMaster.tx_buf = tx_buf;
-    reqMaster.tx_len = LED_SET_LEN;
-    reqMaster.rx_buf = NULL;
-    reqMaster.rx_len = 0;
-    reqMaster.restart = 0;
+	// Set the LED Color
+	mxc_i2c_req_t reqMaster;
+	reqMaster.i2c = PMIC_I2C;
+	reqMaster.addr = PMIC_SLAVE_ADDR;
+	reqMaster.tx_buf = tx_buf;
+	reqMaster.tx_len = LED_SET_LEN;
+	reqMaster.rx_buf = NULL;
+	reqMaster.rx_len = 0;
+	reqMaster.restart = 0;
 
-    tx_buf[0] = LED_SET_REG_ADDR;
-    tx_buf[1] = (uint8_t) ((state & LED_I2C_BLUE) 	<< 5);		//Set Blue LED?
-    tx_buf[2] = (uint8_t) ((state & LED_I2C_RED) 	<< 4);		//Set Red LED?
-    tx_buf[3] = (uint8_t) ((state & LED_I2C_GREEN) 	<< 3);		//Set Green LED?
+	tx_buf[0] = LED_SET_REG_ADDR;
+	tx_buf[1] = (uint8_t) ((state & LED_I2C_BLUE) << 5);		//Set Blue LED?
+	tx_buf[2] = (uint8_t) ((state & LED_I2C_RED) << 4);		//Set Red LED?
+	tx_buf[3] = (uint8_t) ((state & LED_I2C_GREEN) << 3);		//Set Green LED?
 
-    if ((error = MXC_I2C_MasterTransaction(&reqMaster)) != 0) {
-        printf("Error writing: %d\n", error);
-        while(1);
-    }
+	if ((error = MXC_I2C_MasterTransaction(&reqMaster)) != 0) {
+		printf("Error writing: %d\n", error);
+		while (1)
+			;
+	}
 }
 
 /* **************************************************************************** */
 
-void serial_image(uint32_t *img)
-{
+void serial_image(uint32_t *img) {
 	uint8_t *p = (uint8_t*) img;
 	uint8_t r, g, b;
-	for (int i = 0; i < IMAGE_SIZE_Y; i++)
-	{
-		for (int j = 0; j < IMAGE_SIZE_X; j++)
-		{
+	for (int i = 0; i < IMAGE_SIZE_Y; i++) {
+		for (int j = 0; j < IMAGE_SIZE_X; j++) {
 			r = *p++ ^ 0x80;
 			g = *(p++) ^ 0x80;
 			b = *(p++) ^ 0x80;
@@ -156,7 +146,8 @@ void serial_image(uint32_t *img)
 void fail(void) {
 	printf("\n*** FAIL ***\n\n");
 
-	while (1);
+	while (1)
+		;
 }
 
 /* **************************************************************************** */
@@ -187,8 +178,7 @@ void capture_process_camera(void) {
 				break;
 			}
 		}
-		if (row == 0)
-		{
+		if (row == 0) {
 			release_camera_stream_buffer();
 			continue;
 		}
@@ -219,7 +209,8 @@ void capture_process_camera(void) {
 		printf("OVERFLOW DISP = %d\n", stat->overflow_count);
 		LED_On(LED2); // Turn on red LED if overflow detected
 
-		while (1);
+		while (1)
+			;
 	}
 
 }
@@ -229,10 +220,10 @@ int main(void) {
 	int ret = 0;
 	int dma_channel;
 
-    // Wait for PMIC 1.8V to become available, about 180ms after power up.
-    MXC_Delay(200000);
-    /* Enable camera power */
-    Camera_Power(POWER_ON);
+	// Wait for PMIC 1.8V to become available, about 180ms after power up.
+	MXC_Delay(200000);
+	/* Enable camera power */
+	Camera_Power(POWER_ON);
 
 	/* Enable cache */
 	MXC_ICC_Enable(MXC_ICC0);
@@ -249,13 +240,9 @@ int main(void) {
 	camera_init(CAMERA_FREQ);
 
 	ret = camera_setup(
-			IMAGE_SIZE_X,
-			IMAGE_SIZE_Y,
-			PIXFORMAT_RGB888,
-			FIFO_THREE_BYTE,
-			STREAMING_DMA,
-			dma_channel
-			);
+	IMAGE_SIZE_X,
+	IMAGE_SIZE_Y, PIXFORMAT_RGB888, FIFO_THREE_BYTE, STREAMING_DMA,
+			dma_channel);
 	if (ret != STATUS_OK) {
 		printf("Error returned from setting up camera. Error %d\n", ret);
 		return -1;
@@ -270,7 +257,8 @@ int main(void) {
 	D2_LED(_BLACK);
 
 	// Wait for SW1 button press
-	while (!PB_Get(0));
+	while (!PB_Get(0))
+		;
 
 	int contrast = 2;
 
@@ -284,7 +272,8 @@ int main(void) {
 
 		serial_image(input_0);
 
-		while (!PB_Get(0));
+		while (!PB_Get(0))
+			;
 
 	}
 

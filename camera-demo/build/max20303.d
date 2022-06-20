@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/max20303.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/max20303.o: \
  c:\maximsdk\libraries\miscdrivers\pmic\max20303.c \
  c:\maximsdk\tools\gnutools\10.3\lib\gcc\arm-none-eabi\10.3.1\include\stdint.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\stdint.h \

@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/ov7692.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/ov7692.o: \
  c:\maximsdk\libraries\miscdrivers\camera\ov7692.c \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\stdio.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\_ansi.h \

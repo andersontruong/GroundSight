@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/pb.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/pb.o: \
  c:\maximsdk\libraries\miscdrivers\pushbutton\pb.c \
  c:\maximsdk\tools\gnutools\10.3\lib\gcc\arm-none-eabi\10.3.1\include\stddef.h \
  C:/MaximSDK/Libraries/PeriphDrivers/Include/MAX78000/mxc_device.h \

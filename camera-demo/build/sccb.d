@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/sccb.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/sccb.o: \
  c:\maximsdk\libraries\miscdrivers\camera\sccb.c \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\stdio.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\_ansi.h \

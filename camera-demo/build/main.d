@@ -68,8 +68,7 @@ C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/main.o
  c:\maximsdk\tools\gnutools\10.3\lib\gcc\arm-none-eabi\10.3.1\include\stdbool.h \
  C:/MaximSDK/Libraries/PeriphDrivers/Include/MAX78000/dma.h \
  C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Include/dma_regs.h \
- c:\maximsdk\libraries\miscdrivers\pushbutton\pb.h cnn.h weights.h \
- sampledata.h \
+ c:\maximsdk\libraries\miscdrivers\pushbutton\pb.h \
  C:/MaximSDK/Libraries/PeriphDrivers/Include/MAX78000/mxc_delay.h \
  c:\maximsdk\libraries\miscdrivers\camera\camera.h \
  c:\maximsdk\libraries\miscdrivers\camera\ov7692_regs.h \

@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/led.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/led.o: \
  c:\maximsdk\libraries\miscdrivers\led\led.c \
  C:/MaximSDK/Libraries/PeriphDrivers/Include/MAX78000/mxc_device.h \
  C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Include/max78000.h \

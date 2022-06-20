@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/stdio.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/stdio.o: \
  c:\maximsdk\libraries\miscdrivers\stdio.c \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\sys\errno.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\sys\reent.h \

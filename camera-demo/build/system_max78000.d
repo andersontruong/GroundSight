@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/system_max78000.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/system_max78000.o: \
  C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Source/system_max78000.c \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\string.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\_ansi.h \

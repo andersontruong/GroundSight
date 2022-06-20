@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/board.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/board.o: \
  C:/MaximSDK/Libraries/Boards/MAX78000/FTHR_RevA/Source/board.c \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\stdio.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\_ansi.h \

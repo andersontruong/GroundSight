@@ -1,4 +1,4 @@
-C:/MaximSDK/Examples/MAX78000/CNN/cats-dogs_demo/build/camera.o: \
+C:/Users/ander/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/camera.o: \
  c:\maximsdk\libraries\miscdrivers\camera\camera.c \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\stdlib.h \
  c:\maximsdk\tools\gnutools\10.3\arm-none-eabi\include\machine\ieeefp.h \
