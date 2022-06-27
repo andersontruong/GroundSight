@@ -53,7 +53,6 @@ C:/Users/thinkpad/Documents/GitHub/GroundSight/GroundSight/camera-demo/build/mai
  C:/MaximSDK/Libraries/PeriphDrivers/Include/MAX78000/mxc_device.h \
  C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Include/lpgcr_regs.h \
  C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Include/gcr_regs.h \
- C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Include/fcr_regs.h \
  C:/MaximSDK/Libraries/PeriphDrivers/Include/MAX78000/icc.h \
  C:/MaximSDK/Libraries/CMSIS/Device/Maxim/MAX78000/Include/icc_regs.h \
  c:\maximsdk\libraries\miscdrivers\led\led.h \

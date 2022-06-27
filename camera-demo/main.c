@@ -36,9 +36,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+
 #include "mxc_device.h"
 #include "mxc_sys.h"
-#include "fcr_regs.h"
 #include "icc.h"
 #include "led.h"
 #include "tmr.h"
@@ -143,15 +143,6 @@ void serial_image(uint32_t *img) {
 
 /* **************************************************************************** */
 
-void fail(void) {
-	printf("\n*** FAIL ***\n\n");
-
-	while (1)
-		;
-}
-
-/* **************************************************************************** */
-
 void capture_process_camera(void) {
 
 	uint8_t *raw;
@@ -209,10 +200,8 @@ void capture_process_camera(void) {
 		printf("OVERFLOW DISP = %d\n", stat->overflow_count);
 		LED_On(LED2); // Turn on red LED if overflow detected
 
-		while (1)
-			;
+		while (1);
 	}
-
 }
 
 /* **************************************************************************** */
@@ -222,6 +211,7 @@ int main(void) {
 
 	// Wait for PMIC 1.8V to become available, about 180ms after power up.
 	MXC_Delay(200000);
+
 	/* Enable camera power */
 	Camera_Power(POWER_ON);
 
@@ -240,9 +230,13 @@ int main(void) {
 	camera_init(CAMERA_FREQ);
 
 	ret = camera_setup(
-	IMAGE_SIZE_X,
-	IMAGE_SIZE_Y, PIXFORMAT_RGB888, FIFO_THREE_BYTE, STREAMING_DMA,
-			dma_channel);
+		IMAGE_SIZE_X,
+		IMAGE_SIZE_Y,
+		PIXFORMAT_RGB888,
+		FIFO_THREE_BYTE,
+		STREAMING_DMA,
+		dma_channel
+	);
 	if (ret != STATUS_OK) {
 		printf("Error returned from setting up camera. Error %d\n", ret);
 		return -1;
@@ -250,31 +244,23 @@ int main(void) {
 
 	camera_write_reg(0x11, 0x3); // set camera clock prescaller to prevent streaming overflow
 
-	camera_set_brightness(-2);
-	camera_set_contrast(0);
-
-	D1_LED(_BLACK);
+	D1_LED(_GREEN);
 	D2_LED(_BLACK);
 
-	// Wait for SW1 button press
-	while (!PB_Get(0))
-		;
+	camera_set_brightness(-2);
+	camera_set_contrast(2);
 
-	int contrast = 2;
+	while (1)
+	{
+		// Wait for SW1 button press
+		while (!PB_Get(0));
 
-	while (1) {
-
-		camera_set_contrast(contrast);
 		D1_LED(_WHITE);
 		MXC_Delay(MXC_DELAY_SEC(3));
+
 		capture_process_camera();
+
 		D1_LED(_BLACK);
-
-		serial_image(input_0);
-
-		while (!PB_Get(0))
-			;
-
 	}
 
 	return 0;

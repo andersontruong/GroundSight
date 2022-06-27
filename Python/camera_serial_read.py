@@ -11,6 +11,7 @@ import serial
 import tqdm
 import numpy as np
 from PIL import Image
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='Save RGB image over serial')
 parser.add_argument('directory')
@@ -52,3 +53,6 @@ img.save(FILE_DIR)
 print(f'Saved image as "{FILE_DIR}".\n')
 
 ser.close()
+
+plt.imshow(img)
+plt.show()
