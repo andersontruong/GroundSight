@@ -1,18 +1,11 @@
 # GroundSight
+MAX78000FTHR
 
-## Capture and save images from MAX78000FTHR's onboard camera
-1. Compile and upload the .c project in 'camera-demo/' to the MAX78000FTHR.
+## Capture and save images on SD card
+1. Modify main.c for for a specific button to trigger a capture. By default, it uses a pull-down switch connected to [P1.0 (https://datasheets.maximintegrated.com/en/ds/MAX78000FTHR.pdf)
+1. Compile and upload the .c project in 'data-collection/'.
+2. The D1 LED should be blinking green. Press the assigned button to capture an image. An LED can be connected to P1.1 to act as a flash.
+3. The D1 LED will now switch to red as it writes. Once it goes back to blinking green, the file should be saved.
 2. Install the required Python packages in 'Python/requirements.txt'.
-3. Connect the board to a USB port.
-4. Run 'Python/camera_serial_read.py' with the command-line arguments below
-5. Press the SW1/PB1 button on the MAX78000FTHR to capture an image.
-
-### Command-Line Arguments
-| Argument | Description | Examples |
-| --- | --- | --- |
-| directory | File directory to save the image at | ex: capture.png, captures/test.jpg, ./photos/image.bmp |
-| serial_port | COM port connected to the board | ex: COM1, COM5, COM7 |
-| --baud_rate | Baud rate for serial communication. Default: 115200 | ex: 9600, 19200 |
-| --time_out | Serial read time-out in seconds. Default: 5 | ex: 2, 7 |
-| -x, --width | Image width in pixels. Default: 128 | ex: 28, 64 |
-| -y, --height | Image height in pixels. Default: 128 | ex: 28, 64 |
+3. Move the image_# files into the 'Python/src' folder
+4. Run the script and the images should appear in the 'Python/dest' folder
