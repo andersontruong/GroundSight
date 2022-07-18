@@ -9,6 +9,9 @@
 #include <WebServer.h>
 #include "index.h"
 #include <WiFiClient.h>
+#include <Wire.h>
+
+#include "mpu6050.h"
 
 // OV2640 camera module pins (CAMERA_MODEL_AI_THINKER)
 #define PWDN_GPIO_NUM 32
@@ -29,6 +32,9 @@
 #define PCLK_GPIO_NUM 22
 #define FLASH_GPIO_NUM 4
 
+#define SDA 3
+#define SCL 1
+
 // ledPin refers to ESP32-CAM GPIO 4 (flashlight)
 #define FLASH_GPIO_NUM 4
 
@@ -44,19 +50,39 @@ void handleRoot() {
   String s = MAIN_page; //Read HTML contents
   server.send(200, "text/html", s); //Send web page
 }
- 
+
+int16_t accel_data[3];
+float accel_float[3];
+
+bool current = false;
+bool prev = true;
+int steps = 0;
+
 void handleADC() {
-  static int val = 0;
-  val++;
-  if (val > 10)
-    val = 0;
-  server.send(200, "text/plane", String(val)); //Send ADC value only to client ajax request
+  MPU6050_getAccel(accel_data);
+  for (uint8_t i = 0; i < 3; i++)
+  {
+    accel_float[i] = (float) accel_data[i] / 16384.0;
+  }
+
+  if (accel_float[1] >= 0.45 || accel_float[1] <= -0.45)
+    current = false;
+  else
+    current = true;
+
+  if (current && !prev)
+    steps++;
+
+  server.send(200, "text/plane", String(steps)); //Send ADC value only to client ajax request
+  prev = current;
 }
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("Boot");
+  Wire.begin(SDA, SCL);
+  MPU6050_write(MPU6050_RA_PWR_MGMT_1, 0x00);
+  //Serial.begin(115200);
+  //Serial.println("Boot");
 
   /*
   WiFi.mode(WIFI_AP); // Access Point Mode
@@ -66,25 +92,25 @@ void setup()
   //WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  //Serial.print("Connecting to ");
+  //Serial.println(ssid);
 
   while (WiFi.status() != WL_CONNECTED)
   {
     Serial.print(".");
     delay(1000);
   }
-  Serial.println();
+  //Serial.println();
 
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
+  //Serial.print("IP Address: ");
+  //Serial.println(WiFi.localIP());
 
   // Display page
   server.on("/", handleRoot);
   server.on("/readADC", handleADC);
 
   server.begin();
-  Serial.println("Server started");
+  //Serial.println("Server started");
 }
 
 void loop()

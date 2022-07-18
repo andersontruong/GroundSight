@@ -94,15 +94,13 @@ void setup() {
 
 int16_t accel_data[3];
 float accel_float[3];
-float x_output, y_output, z_output;
-
 void loop() {
   checkToReconnect();
 
   //MPU6050_read(MPU6050_RA_ACCEL_XOUT_L, &data, 1);
 
   MPU6050_getAccel(accel_data);
-  for (uint8_t i = 0; i < 0; i++)
+  for (uint8_t i = 0; i < 3; i++)
   {
     accel_float[i] = (float) accel_data[i] / 16384.0;
     ACCEL_CHARS[i]->setValue(accel_float[i]);
