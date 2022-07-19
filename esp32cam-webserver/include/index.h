@@ -11,27 +11,27 @@ const char MAIN_page[] PROGMEM = R"rawliteral(
     color: #FFF;
     margin:20px;
     box-shadow: 0px 2px 18px -4px rgba(0,0,0,0.75);
-    text-align: center;
+    text-align: right;
 }
 </style>
 <body>
 
 <div class="card">
-  <h1>Step Tracker</h1><br>
-  <h2>Count:<span id="STEPS">0</span></h2><br>
+  <h1>Anteroposterior Acceleration</h1><br>
+  <h2><span id="YACCEL">0</span></h2><br>
 </div>
 
 
 <script>
 setInterval(function() {
   getData();
-}, 100);
+}, 200);
 
 function getData() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("STEPS").innerHTML = this.responseText;
+      document.getElementById("YACCEL").innerHTML = this.responseText;
     }
   };
   xhttp.open("GET", "readADC", true);

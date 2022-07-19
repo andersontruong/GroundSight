@@ -41,8 +41,8 @@
 // Photo File Name to save in SPIFFS
 #define FILE_PHOTO "/photo.jpg"
 
-const char* ssid = "err404_guest_not_found";
-const char* password = "GoBruinsTrackandField!";
+const char* ssid = "HiLab";
+const char* password = "UCLAhilab21";
 
 WebServer server(80);
 
@@ -62,9 +62,10 @@ void handleADC() {
   MPU6050_getAccel(accel_data);
   for (uint8_t i = 0; i < 3; i++)
   {
-    accel_float[i] = (float) accel_data[i] / 16384.0;
+    accel_float[i] = (float) accel_data[i] / -16384.0;
   }
 
+/*
   if (accel_float[1] >= 0.45 || accel_float[1] <= -0.45)
     current = false;
   else
@@ -72,22 +73,22 @@ void handleADC() {
 
   if (current && !prev)
     steps++;
-
-  server.send(200, "text/plane", String(steps)); //Send ADC value only to client ajax request
+*/
+  server.send(200, "text/plane", String(accel_float[0], 3) + "g"); //Send ADC value only to client ajax request
   prev = current;
 }
 
 void setup()
 {
   Wire.begin(SDA, SCL);
-  MPU6050_write(MPU6050_RA_PWR_MGMT_1, 0x00);
   //Serial.begin(115200);
+  MPU6050_write(MPU6050_RA_PWR_MGMT_1, 0x00);
   //Serial.println("Boot");
 
-  /*
-  WiFi.mode(WIFI_AP); // Access Point Mode
-  WiFi.softAP(ssid, password); 
-  */
+  
+  //WiFi.mode(WIFI_AP); // Access Point Mode
+  //WiFi.softAP(ssid, password); 
+  
 
   //WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -97,12 +98,13 @@ void setup()
 
   while (WiFi.status() != WL_CONNECTED)
   {
-    Serial.print(".");
-    delay(1000);
+   //Serial.print(".");
+   delay(1000);
   }
   //Serial.println();
 
   //Serial.print("IP Address: ");
+  //Serial.println(WiFi.softAPIP());
   //Serial.println(WiFi.localIP());
 
   // Display page
