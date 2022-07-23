@@ -117,5 +117,5 @@ void loop() {
   accel_mag = sqrt(accel_mag);
   ACCEL_CHARS[3]->setValue(accel_mag);
 
-  delay(10);
+  //delayMicroseconds(1);
 }
