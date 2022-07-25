@@ -3,7 +3,6 @@
 #include "SD_MMC.h"
 
 //List dir in SD card
-/*
 void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
     Serial.printf("Listing directory: %s\n", dirname);
 
@@ -34,7 +33,6 @@ void listDir(fs::FS &fs, const char * dirname, uint8_t levels){
         file = root.openNextFile();
     }
 }
-*/
 
 //Create a dir in SD card
 void createDir(fs::FS &fs, const char * path){
@@ -93,17 +91,17 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 
 //Append to the end of file in SD card
 void appendFile(fs::FS &fs, const char * path, const char * message){
-    // Serial.printf("Appending to file: %s\n", path);
+    Serial.printf("Appending to file: %s\n", path);
 
     File file = fs.open(path, FILE_APPEND);
     if(!file){
-        // Serial.println("Failed to open file for appending");
+        Serial.println("Failed to open file for appending");
         return;
     }
     if(file.print(message)){
-        // Serial.println("Message appended");
+        Serial.println("Message appended");
     } else {
-        // Serial.println("Append failed");
+        Serial.println("Append failed");
     }
 }
 
