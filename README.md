@@ -1,5 +1,5 @@
 # TensorFlow Lite Micro Setup with PlatformIO (ESP32-CAM)
-This setup guide unifies several sources to demonstrate the entire pipeline.
+This setup guide unifies several sources to cover the entire pipeline.
 We will be using the ESP32-CAM board for demonstration, but most of the steps should work for many MCUs.
 
 Installations: VSCode, PlatformIO extension, Python (conda, TensorFlow-GPU (cuda, cudnn), Matplotlib, NumPy, JupyterLab), Synthesis (xxd for Linux or Python script), tflite-micro library, tflm class for setup and utilities)
