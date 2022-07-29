@@ -1,18 +1,15 @@
-#include "NeuralNetwork.h"
-#include "model_data.h"
+#include "tflm_class.h"
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
 
-const int kArenaSize = 1024 * 60;
-
-NeuralNetwork::NeuralNetwork()
+TFLM_Net::TFLM_Net(const void *modelData, int kArenaSize)
 {
     error_reporter = new tflite::MicroErrorReporter();
 
-    model = tflite::GetModel(converted_model_tflite);
+    model = tflite::GetModel(modelData);
     if (model->version() != TFLITE_SCHEMA_VERSION)
     {
         TF_LITE_REPORT_ERROR(error_reporter, "Model provided is schema version %d not equal to supported version %d.",
@@ -21,13 +18,6 @@ NeuralNetwork::NeuralNetwork()
     }
     // This pulls in the operators implementations we need
     resolver = new tflite::AllOpsResolver();
-    resolver->AddFullyConnected();
-    resolver->AddMul();
-    resolver->AddAdd();
-    resolver->AddLogistic();
-    resolver->AddReshape();
-    resolver->AddQuantize();
-    resolver->AddDequantize();
 
     tensor_arena = (uint8_t *)malloc(kArenaSize);
     if (!tensor_arena)
@@ -55,11 +45,36 @@ NeuralNetwork::NeuralNetwork()
     input = interpreter->input(0);
     output = interpreter->output(0);
 
-    in = input->data.f;
-    out = output->data.f;
+    in_float = input->data.f;
+    out_float = output->data.f;
 }
 
-void NeuralNetwork::run()
+void TFLM_Net::load_input(const float* buffer, int size)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        input->data.f[i] = buffer[i];
+    }
+}
+void TFLM_Net::load_input(const int8_t* buffer, int size)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        input->data.int8[i] = buffer[i];
+    }
+}
+
+float* TFLM_Net::output_float()
+{
+    return output->data.f;
+}
+
+int8_t* TFLM_Net::output_int8()
+{
+    return output->data.int8;
+}
+
+void TFLM_Net::run()
 {
     interpreter->Invoke();
 }

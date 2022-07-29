@@ -1,28 +1,24 @@
 #include <Arduino.h>
-#include "NeuralNetwork.h"
+#include "tflm_class.h"
 #include "digit.h"
+#include "model_data.h"
 
-NeuralNetwork *nn;
+TFLM_Net *nn;
 
 void setup()
 {
   Serial.begin(115200);
-  nn = new NeuralNetwork();
+  nn = new TFLM_Net(converted_model_tflite, 1028*60);
 }
 
 void loop()
 {
-
-  for (size_t i = 0; i < 784; i++)
-  {
-    nn->in[i] = digit[i];
-  }
-
+  nn->load_input(digit, 784);
   nn->run();
 
   for (size_t i = 0; i < 10; i++)
   {
-    Serial.print(nn->out[i]);
+    Serial.print(nn->output_int8()[i]);
     Serial.print(", ");
   }
   Serial.println('\n');

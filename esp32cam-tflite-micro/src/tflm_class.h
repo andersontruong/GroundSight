@@ -1,5 +1,5 @@
-#ifndef __NeuralNetwork__
-#define __NeuralNetwork__
+#ifndef __TFLM_NET__
+#define __TFLM_NET__
 
 #include <stdint.h>
 
@@ -9,11 +9,11 @@ namespace tflite
     class ErrorReporter;
     class Model;
     class MicroInterpreter;
-} // namespace tflite
+}
 
 struct TfLiteTensor;
 
-class NeuralNetwork
+class TFLM_Net
 {
 private:
     tflite::AllOpsResolver *resolver;
@@ -25,11 +25,15 @@ private:
     uint8_t *tensor_arena;
 
 public:
-    NeuralNetwork();
+    TFLM_Net(const void *modelData, int kArenaSize);
+    void load_input(const float* buffer, int size);
+    void load_input(const int8_t* buffer, int size);
+    float* output_float();
+    int8_t* output_int8();
     void run();
 
-    float* out;
-    float* in;
+    float* out_float;
+    float* in_float;
 };
 
 #endif
