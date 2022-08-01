@@ -3,24 +3,14 @@
 #include "mpu6050.h"
 #include "sdrw.h"
 #include "imu_filter.h"
-#include "Adafruit_NeoPixel.h"
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
-
-/* ===== NEOPIXEL LED ===== */
-#define LED_PIN 12
-
-Adafruit_NeoPixel led(1, LED_PIN, NEO_GRB + NEO_KHZ800);
-/* ===== END NEOPIXEL LED ===== */
-
-
 
 /* ===== MPU-6050 I2C ===== */
 #define SDA 3
 #define SCL 1
 /* ===== END MPU-6050 I2C ===== */
-
 
 
 /* ===== DSP ===== */
@@ -44,51 +34,38 @@ bool dataAvailable = false;
 // Difference
 int16_t diff_accel = 0;
 int16_t prev_diff_accel = 0;
-
-int LED_timer = 0;
-
-
 /* ===== END DSP ===== */
 
+int counter = 0;
 
 void setup() {
   // MPU-6050 I2C
   Wire.begin(SDA, SCL);
   MPU6050_write(MPU6050_RA_PWR_MGMT_1, 0x00);
 
-  led.begin();
-  led.clear();
+  pinMode(4, OUTPUT);
 
+/*
   // Setup SD card
-  if(!SD_MMC.begin()){
-    while(1)
-    {
-      led.setPixelColor(0, led.Color(200, 0, 0));
-      led.show();
-    }
+  if(!SD_MMC.begin())
+  {
+    while (1);
   }
   uint8_t cardType = SD_MMC.cardType();
 
   if(cardType == CARD_NONE){
-    while(1)
-    {
-      led.setPixelColor(0, led.Color(200, 0, 0));
-      led.show();
-    }
+    while (1);
   }
 
   // Empty file
   writeFile(SD_MMC, "/raw.txt", "");
   writeFile(SD_MMC, "/filtered.txt", "");
   writeFile(SD_MMC, "/trigger.txt", "");
+  */
 
   inputs = imu_buffer_init(Y_BUFFER_SIZE);
   outputs = imu_buffer_init(X_BUFFER_SIZE);
 }
-
-uint8_t red = 200;
-uint8_t green = 0;
-uint8_t blue = 200;
 
 void loop() 
 {
@@ -96,22 +73,20 @@ void loop()
   filtered_accel = imu_filter(ap_accel, inputs, b_coeff, outputs, a_coeff);
   diff_accel = filtered_accel - prev_filtered_accel;
 
-  appendFile(SD_MMC, "/raw.txt", (String(micros()) + ',' + String(ap_accel) + "\n").c_str());
-  appendFile(SD_MMC, "/filtered.txt", (String(micros()) + ',' + String(filtered_accel) + "\n").c_str());
+  //appendFile(SD_MMC, "/raw.txt", (String(micros()) + ',' + String(ap_accel) + "\n").c_str());
+  //appendFile(SD_MMC, "/filtered.txt", (String(micros()) + ',' + String(filtered_accel) + "\n").c_str());
   //appendFile(SD_MMC, "/diff.txt", (String(micros()) + ',' + String(diff_accel) + "\n").c_str());
 
-  red = 0;
-  green = 200;
-  blue = 0;
-
-  if (diff_accel >= 0 && prev_diff_accel < 0)
+  if (diff_accel > 50 && prev_diff_accel < 0) //(diff_accel >= 0 && prev_diff_accel < 0)
   {
-    LED_timer = 100;
-    //appendFile(SD_MMC, "/trigger.txt", (String(micros()) + ',' + String(diff_accel) + "-" + String(prev_diff_accel) + "\n").c_str());
+    digitalWrite(4, HIGH);
+    counter = 100;
   }
-
-  led.setPixelColor(0, led.Color(red, green, blue));
-  led.show();
+  if (--counter == 0)
+  {
+    digitalWrite(4, LOW);
+  }
+  
 
   prev_filtered_accel = filtered_accel;
   prev_diff_accel = diff_accel;
