@@ -44,6 +44,7 @@ void setup() {
   MPU6050_write(MPU6050_RA_PWR_MGMT_1, 0x00);
 
   pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
 
 /*
   // Setup SD card
@@ -77,15 +78,15 @@ void loop()
   //appendFile(SD_MMC, "/filtered.txt", (String(micros()) + ',' + String(filtered_accel) + "\n").c_str());
   //appendFile(SD_MMC, "/diff.txt", (String(micros()) + ',' + String(diff_accel) + "\n").c_str());
 
-  if (diff_accel > 50 && prev_diff_accel < 0) //(diff_accel >= 0 && prev_diff_accel < 0)
+  if (diff_accel >= 100 && prev_diff_accel < 50)
   {
     digitalWrite(4, HIGH);
     counter = 100;
   }
-  if (--counter == 0)
-  {
+  if (counter == 0)
     digitalWrite(4, LOW);
-  }
+  else
+    counter--;
   
 
   prev_filtered_accel = filtered_accel;
