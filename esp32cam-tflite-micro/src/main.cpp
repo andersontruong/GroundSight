@@ -44,6 +44,23 @@ void loop()
     //Serial.println(fb->len);
   }
 
+  uint8_t* out = NULL;
+  size_t out_len;
+  // subtract 54
+  frame2bmp(fb, &out, &out_len);
+  Serial.println(out_len);
+  free(out);
+
+  for (int i = 54; i < out_len; i++)
+  {
+    Serial.print(out[i]);
+    Serial.print(", ");
+  }
+
+  Serial.println();
+    
+
+/*
   int scale = 4;
   for (int row = 0; row < 96; row += scale)
     for (int col = 0; col < 96; col += scale)
@@ -72,18 +89,9 @@ void loop()
   }
   Serial.println(value[max_index]);
   Serial.println('\n');
-  /*
-  for (int row = 0; row < 28; row++)
-  {
-    for (int col = 0; col < 28; col++)
-    {
-      Serial.print(downscale[col + row*28]);
-      Serial.print(',');
-    }
-    Serial.println();
-  }
-  */
+*/
   //sd_write("/" + String(counter++) + ".bmp", bmp, fb->len * 3);
+
   esp_camera_fb_return(fb);
 
   delay(500);

@@ -24,17 +24,17 @@ int camera_init()
     config.pin_pwdn = PWDN_GPIO_NUM;
     config.pin_reset = RESET_GPIO_NUM;
     config.xclk_freq_hz = 20000000;
-    config.pixel_format = PIXFORMAT_GRAYSCALE; 
+    config.pixel_format = PIXFORMAT_JPEG; 
 
     if (psramFound())
     {
-        config.frame_size = FRAMESIZE_96X96; // FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
+        config.frame_size = FRAMESIZE_240X240; // FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
         config.jpeg_quality = 10;
         config.fb_count = 2;
     } 
     else 
     {
-        config.frame_size = FRAMESIZE_96X96;
+        config.frame_size = FRAMESIZE_240X240;
         config.jpeg_quality = 12;
         config.fb_count = 1;
     }
