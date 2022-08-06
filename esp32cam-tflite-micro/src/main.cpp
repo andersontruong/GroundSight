@@ -49,17 +49,14 @@ void loop()
   // subtract 54
   frame2bmp(fb, &out, &out_len);
   Serial.println(out_len);
+
+  sd_write("/" + String(counter++) + ".bmp", out, out_len);
+
   free(out);
 
-  for (int i = 54; i < out_len; i++)
-  {
-    Serial.print(out[i]);
-    Serial.print(", ");
-  }
-
-  Serial.println();
-    
-
+  Serial.println("===============");
+  Serial.println("===============");  
+  Serial.println("===============");
 /*
   int scale = 4;
   for (int row = 0; row < 96; row += scale)
@@ -94,7 +91,7 @@ void loop()
 
   esp_camera_fb_return(fb);
 
-  delay(500);
+  delay(1000);
   /*
   nn->load_input(digit, 784);
   nn->run();
