@@ -237,6 +237,8 @@ void setup() {
     Serial.printf("Camera init failed with error 0x%x", err);
     return;
   }
+
+  /*
   // Wi-Fi connection
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -248,6 +250,7 @@ void setup() {
   
   Serial.print("Camera Stream Ready! Go to: http://");
   Serial.print(WiFi.localIP());
+  */
 
   sensor_t * s = esp_camera_sensor_get();
   s->set_brightness(s, -1);
@@ -256,7 +259,7 @@ void setup() {
   //s->set_whitebal(s, 1);
   
   // Start streaming web server
-  startCameraServer();
+  // startCameraServer();
 }
 
 int counter = 0;
