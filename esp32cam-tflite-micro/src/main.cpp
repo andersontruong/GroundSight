@@ -162,7 +162,10 @@ void loop()
   nn->load_input(output_array, out_size*out_size*3);
   nn->run();
 
-  String bleString = String(nn->output_float()[0]) + ", " + String(nn->output_float()[1]);
+  String bleString = "";
+  for (int i = 0; i < 5; i++)
+    bleString += String(nn->output_float()[i]) + ", ";
+
   Serial.println(bleString);
 
   inference.setValue(bleString.c_str());
