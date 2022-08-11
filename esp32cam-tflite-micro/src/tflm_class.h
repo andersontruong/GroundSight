@@ -26,8 +26,7 @@ private:
 
 public:
     TFLM_Net(const void *modelData, int kArenaSize);
-    void load_input(const float* buffer, int size);
-    void load_input(const int8_t* buffer, int size);
+    void load_input(uint8_t* buffer, int size);
     float* output_float();
     int8_t* output_int8();
     void run();

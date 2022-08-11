@@ -49,18 +49,11 @@ TFLM_Net::TFLM_Net(const void *modelData, int kArenaSize)
     out_float = output->data.f;
 }
 
-void TFLM_Net::load_input(const float* buffer, int size)
+void TFLM_Net::load_input(uint8_t* buffer, int size)
 {
     for (size_t i = 0; i < size; i++)
     {
-        input->data.f[i] = buffer[i];
-    }
-}
-void TFLM_Net::load_input(const int8_t* buffer, int size)
-{
-    for (size_t i = 0; i < size; i++)
-    {
-        input->data.int8[i] = buffer[i];
+        input->data.f[i] = buffer[i] / 255.;
     }
 }
 
