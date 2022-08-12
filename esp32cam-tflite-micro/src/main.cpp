@@ -124,7 +124,7 @@ void setup()
   BLEDevice::startAdvertising();
 
   Serial.begin(115200);
-  nn = new TFLM_Net(converted_model_tflite, 1024*460);
+  nn = new TFLM_Net(converted_model_tflite, 1024*260);
 
   fb = esp_camera_fb_get();  
   esp_camera_fb_return(fb);
@@ -155,6 +155,8 @@ void loop()
   downsample_float(out + 54, output_array);
   free(out);
 
+  
+
   //Serial.println(out_len);
 
   //sd_write("/" + String(counter++) + ".bmp", output_array, out_size * out_size * 3);
@@ -162,13 +164,16 @@ void loop()
   nn->load_input(output_array, out_size*out_size*3);
   nn->run();
 
-  String bleString = "";
-  for (int i = 0; i < 5; i++)
-    bleString += String(nn->output_float()[i]) + ", ";
+  String bleString = String(nn->output_float()[0]) + ", "
+                    + String(nn->output_float()[1]) + ", "
+                    + String(nn->output_float()[2]) + ", "
+                    + String(nn->output_float()[3]) + ", "
+                    + String(nn->output_float()[4]);
 
   Serial.println(bleString);
 
   inference.setValue(bleString.c_str());
+  
 
   Serial.println("===============");
 }
