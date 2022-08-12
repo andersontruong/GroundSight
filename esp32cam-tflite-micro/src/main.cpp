@@ -22,8 +22,8 @@
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 
 #define in_size 240
-#define out_size 60
-#define downscale 4
+#define out_size 30
+#define downscale 8
 
 void downsample_float(uint8_t* in, uint8_t* out)
 {
@@ -124,7 +124,7 @@ void setup()
   BLEDevice::startAdvertising();
 
   Serial.begin(115200);
-  nn = new TFLM_Net(converted_model_tflite, 1024*260);
+  nn = new TFLM_Net(converted_model_tflite, 1000*200);
 
   fb = esp_camera_fb_get();  
   esp_camera_fb_return(fb);
@@ -164,11 +164,10 @@ void loop()
   nn->load_input(output_array, out_size*out_size*3);
   nn->run();
 
-  String bleString = String(nn->output_float()[0]) + ", "
-                    + String(nn->output_float()[1]) + ", "
-                    + String(nn->output_float()[2]) + ", "
-                    + String(nn->output_float()[3]) + ", "
-                    + String(nn->output_float()[4]);
+  String bleString = "";
+
+  for (int i = 0; i < 3; i++)
+    bleString += String(nn->output_float()[i]) + ", ";
 
   Serial.println(bleString);
 

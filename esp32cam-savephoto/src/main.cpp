@@ -44,11 +44,11 @@ void loop()
   size_t out_len;
   frame2bmp(fb, &out, &out_len);
   */
-  if (counter >= 110)
+  if (counter >= 111)
     while(1);
 
   Serial.println("Hey");
-  if (counter++ >= 0)
+  if (counter++ >= -1)
     sd_write("/" + String(counter) + ".jpg", fb->buf, fb->len);
   esp_camera_fb_return(fb);
   delay(1000);

@@ -9,8 +9,8 @@
 #include "esp_http_server.h"
 
 //Replace with your network credentials
-const char* ssid = "HiLab";
-const char* password = "UCLAhilab21";
+const char* ssid = "err404_guest_not_found";
+const char* password = "GoBruinsTrackandField!";
 
 #define PART_BOUNDARY "123456789000000000000987654321"
 
@@ -125,7 +125,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
       Serial.println("Camera capture failed");
       res = ESP_FAIL;
     } else {
-      if(fb->width > 400){
+      if(fb->width > 80){
         if(fb->format != PIXFORMAT_JPEG){
           bool jpeg_converted = frame2jpg(fb, 80, &_jpg_buf, &_jpg_buf_len);
           esp_camera_fb_return(fb);
@@ -212,11 +212,11 @@ void setup() {
   config.pixel_format = PIXFORMAT_JPEG; 
   
   if(psramFound()){
-    config.frame_size = FRAMESIZE_VGA;
+    config.frame_size = FRAMESIZE_240X240;
     config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
-    config.frame_size = FRAMESIZE_VGA;
+    config.frame_size = FRAMESIZE_240X240;
     config.jpeg_quality = 12;
     config.fb_count = 1;
   }
